@@ -194,10 +194,10 @@ Future<void> _setDefaultServerConfig() async {
     // 创建服务器配置对象
     // 您可以根据需要修改这些服务器地址
     final serverConfig = ServerConfig(
-      idServer: 'your-id-server.com',        // 替换为您的ID服务器地址
-      relayServer: 'your-relay-server.com',  // 替换为您的中继服务器地址
-      apiServer: 'https://your-api-server.com', // 替换为您的API服务器地址
-      key: 'your-server-key',                // 替换为您的服务器密钥
+      idServer: '10.6.0.88:21116',        // 替换为您的ID服务器地址
+      relayServer: '',  // 替换为您的中继服务器地址
+      apiServer: '', // 替换为您的API服务器地址
+      key: 'h4l5WIHIAT9wWFZVpqI9dITTgQzB7Vlc6zVt3hwg2YM=',                // 替换为您的服务器密钥
     );
     
     // 调用setServerConfig函数设置服务器配置
