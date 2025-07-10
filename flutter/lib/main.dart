@@ -207,7 +207,7 @@ Future<void> _setDefaultServerConfig() async {
     // 重要：请将下面的服务器地址替换为您的实际服务器地址！
     // 如果您没有修改这些地址，配置将不会生效
     final serverConfig = ServerConfig(
-      idServer: '10.6.0.88',        // 必须替换为您的实际ID服务器地址
+      idServer: '10.6.0.88:21116',        // 必须替换为您的实际ID服务器地址
       relayServer: '',  // 必须替换为您的实际中继服务器地址
       apiServer: '', // 必须替换为您的实际API服务器地址
       key: 'h4l5WIHIAT9wWFZVpqI9dITTgQzB7Vlc6zVt3hwg2YM=',                //  必须替换为您的实际服务器密钥
