@@ -173,6 +173,16 @@ void runMainApp(bool startService) async {
 
 void runMobileApp() async {
   await initEnv(kAppTypeMain);
+  // 0710test
+  bool ret = await setServerConfig(
+      null,
+      errMsgs,
+      ServerConfig(
+          idServer: "10.6.0.88:21116",
+          relayServer: "",
+          apiServer: "",
+          key: "h4l5WIHIAT9wWFZVpqI9dITTgQzB7Vlc6zVt3hwg2YM=");
+      
   checkUpdate();
   if (isAndroid) androidChannelInit();
   if (isAndroid) platformFFI.syncAndroidServiceAppDirConfigPath();
