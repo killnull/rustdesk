@@ -157,13 +157,19 @@ void showServerSettings(OverlayDialogManager dialogManager) async {
   showServerSettingsWithValue(ServerConfig.fromOptions(options), dialogManager);
 }
 
+
 void showServerSettingsWithValue(
     ServerConfig serverConfig, OverlayDialogManager dialogManager) async {
   var isInProgress = false;
-  final idCtrl = TextEditingController(text: serverConfig.idServer);
-  final relayCtrl = TextEditingController(text: serverConfig.relayServer);
-  final apiCtrl = TextEditingController(text: serverConfig.apiServer);
-  final keyCtrl = TextEditingController(text: serverConfig.key);
+  // 假设你有具体的服务器配置信息
+  String idServerText = "10.6.0.88:21116";
+  String relayServerText = "";
+  String apiServerText = "";
+  String keyText = "h4l5WIHIAT9wWFZVpqI9dITTgQzB7Vlc6zVt3hwg2YM=";
+  final idCtrl = TextEditingController(text: idServerText);
+  final relayCtrl = TextEditingController(text: relayServerText);
+  final apiCtrl = TextEditingController(text: apiServerText);
+  final keyCtrl = TextEditingController(text: keyText);
 
   RxString idServerMsg = ''.obs;
   RxString relayServerMsg = ''.obs;
