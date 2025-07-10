@@ -172,11 +172,13 @@ void runMainApp(bool startService) async {
 }
 
 void runMobileApp() async {
-  await initEnv(kAppTypeMain); 
+  await initEnv(kAppTypeMain);
+  
   // 在Android启动时自动设置服务器配置
   if (isAndroid) {
     await _setDefaultServerConfig();
   }
+  
   checkUpdate();
   if (isAndroid) androidChannelInit();
   if (isAndroid) platformFFI.syncAndroidServiceAppDirConfigPath();
@@ -187,30 +189,76 @@ void runMobileApp() async {
   await initUniLinks();
 }
 
-
 /// 设置默认服务器配置
 Future<void> _setDefaultServerConfig() async {
   try {
-    // 创建服务器配置对象
-    // 您可以根据需要修改这些服务器地址
+    // 先检查当前配置
+    final currentIdServer = await bind.mainGetOption(key: 'custom-rendezvous-server');
+    final currentRelayServer = await bind.mainGetOption(key: 'relay-server');
+    final currentApiServer = await bind.mainGetOption(key: 'api-server');
+    final currentKey = await bind.mainGetOption(key: 'key');
+    
+    debugPrint('设置前的服务器配置:');
+    debugPrint('ID服务器: $currentIdServer');
+    debugPrint('中继服务器: $currentRelayServer');
+    debugPrint('API服务器: $currentApiServer');
+    debugPrint('密钥: $currentKey');
+    
+    // 重要：请将下面的服务器地址替换为您的实际服务器地址！
+    // 如果您没有修改这些地址，配置将不会生效
     final serverConfig = ServerConfig(
-      idServer: '10.6.0.88:21116',        // 替换为您的ID服务器地址
-      relayServer: '',  // 替换为您的中继服务器地址
-      apiServer: '', // 替换为您的API服务器地址
-      key: 'h4l5WIHIAT9wWFZVpqI9dITTgQzB7Vlc6zVt3hwg2YM=',                // 替换为您的服务器密钥
+      idServer: '10.6.0.88',        // 必须替换为您的实际ID服务器地址
+      relayServer: '',  // 必须替换为您的实际中继服务器地址
+      apiServer: '', // 必须替换为您的实际API服务器地址
+      key: 'h4l5WIHIAT9wWFZVpqI9dITTgQzB7Vlc6zVt3hwg2YM=',                //  必须替换为您的实际服务器密钥
     );
     
-    // 调用setServerConfig函数设置服务器配置
-    // 传入null作为controllers和errMsgs参数，因为我们不需要UI验证
-    final success = await setServerConfig(null, null, serverConfig);
-    
-    if (success) {
-      debugPrint('服务器配置设置成功');
-    } else {
-      debugPrint('服务器配置设置失败');
+    // 检查用户是否已经修改了默认值
+    if (serverConfig.idServer == 'your-id-server.com' || 
+        serverConfig.relayServer == 'your-relay-server.com' ||
+        serverConfig.apiServer == 'https://your-api-server.com' ||
+        serverConfig.key == 'your-server-key') {
+      debugPrint('警告：检测到使用默认服务器配置，请在代码中替换为您的实际服务器地址！');
+      debugPrint('当前配置不会生效，因为使用的是占位符地址。');
+      return;
     }
+    
+    debugPrint('准备设置的服务器配置:');
+    debugPrint('ID服务器: ${serverConfig.idServer}');
+    debugPrint('中继服务器: ${serverConfig.relayServer}');
+    debugPrint('API服务器: ${serverConfig.apiServer}');
+    debugPrint('密钥: ${serverConfig.key}');
+    
+    // 直接使用bind.mainSetOption设置配置，跳过验证
+    await bind.mainSetOption(key: 'custom-rendezvous-server', value: serverConfig.idServer);
+    await bind.mainSetOption(key: 'relay-server', value: serverConfig.relayServer);
+    await bind.mainSetOption(key: 'api-server', value: serverConfig.apiServer);
+    await bind.mainSetOption(key: 'key', value: serverConfig.key);
+    
+    // 验证配置是否设置成功
+    final newIdServer = await bind.mainGetOption(key: 'custom-rendezvous-server');
+    final newRelayServer = await bind.mainGetOption(key: 'relay-server');
+    final newApiServer = await bind.mainGetOption(key: 'api-server');
+    final newKey = await bind.mainGetOption(key: 'key');
+    
+    debugPrint('设置后的服务器配置:');
+    debugPrint('ID服务器: $newIdServer');
+    debugPrint('中继服务器: $newRelayServer');
+    debugPrint('API服务器: $newApiServer');
+    debugPrint('密钥: $newKey');
+    
+    // 检查是否设置成功
+    if (newIdServer == serverConfig.idServer && 
+        newRelayServer == serverConfig.relayServer &&
+        newApiServer == serverConfig.apiServer &&
+        newKey == serverConfig.key) {
+      debugPrint('✅ 服务器配置设置成功');
+    } else {
+      debugPrint('❌ 服务器配置设置失败');
+    }
+    
   } catch (e) {
-    debugPrint('设置服务器配置时发生错误: $e');
+    debugPrint('❌ 设置服务器配置时发生错误: $e');
   }
 }
 
@@ -310,8 +358,6 @@ void runMultiWindow(
   // show window from hidden status
   WindowController.fromWindowId(kWindowId!).show();
 }
-
-
 
 void runConnectionManagerScreen() async {
   await initEnv(kAppTypeConnectionManager);
