@@ -172,17 +172,11 @@ void runMainApp(bool startService) async {
 }
 
 void runMobileApp() async {
-  await initEnv(kAppTypeMain);
-  // 0710test
-  bool ret = await setServerConfig(
-      null,
-      errMsgs,
-      ServerConfig(
-          idServer: "10.6.0.88:21116",
-          relayServer: "",
-          apiServer: "",
-          key: "h4l5WIHIAT9wWFZVpqI9dITTgQzB7Vlc6zVt3hwg2YM=");
-      
+  await initEnv(kAppTypeMain); 
+  // 在Android启动时自动设置服务器配置
+  if (isAndroid) {
+    await _setDefaultServerConfig();
+  }
   checkUpdate();
   if (isAndroid) androidChannelInit();
   if (isAndroid) platformFFI.syncAndroidServiceAppDirConfigPath();
@@ -191,6 +185,33 @@ void runMobileApp() async {
   gFFI.userModel.refreshCurrentUser();
   runApp(App());
   await initUniLinks();
+}
+
+
+/// 设置默认服务器配置
+Future<void> _setDefaultServerConfig() async {
+  try {
+    // 创建服务器配置对象
+    // 您可以根据需要修改这些服务器地址
+    final serverConfig = ServerConfig(
+      idServer: 'your-id-server.com',        // 替换为您的ID服务器地址
+      relayServer: 'your-relay-server.com',  // 替换为您的中继服务器地址
+      apiServer: 'https://your-api-server.com', // 替换为您的API服务器地址
+      key: 'your-server-key',                // 替换为您的服务器密钥
+    );
+    
+    // 调用setServerConfig函数设置服务器配置
+    // 传入null作为controllers和errMsgs参数，因为我们不需要UI验证
+    final success = await setServerConfig(null, null, serverConfig);
+    
+    if (success) {
+      debugPrint('服务器配置设置成功');
+    } else {
+      debugPrint('服务器配置设置失败');
+    }
+  } catch (e) {
+    debugPrint('设置服务器配置时发生错误: $e');
+  }
 }
 
 void runMultiWindow(
@@ -289,6 +310,8 @@ void runMultiWindow(
   // show window from hidden status
   WindowController.fromWindowId(kWindowId!).show();
 }
+
+
 
 void runConnectionManagerScreen() async {
   await initEnv(kAppTypeConnectionManager);
